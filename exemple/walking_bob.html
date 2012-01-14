@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>untitled</title>
+	<meta http-equiv="content-type" content="text/html;charset=utf-8" />
+	
+<script src="../js/jsgame.01.js"></script>
+<script>
+
+var BOB_SPEED = 3;
+var BOB_ANIM_IDLE = 0;
+var BOB_ANIM_WALK = 1;
+
+var canvas;
+var screen_size = new Vector(640, 480);
+
+var bob;
+var bob_move = new Vector();
+
+var debug;
+
+window.onload = function()
+{
+	debug = document.getElementById("debug");
+	
+	canvas = new Canvas(document.getElementById('game'), screen_size);
+	
+	// BOB
+	bob = new Sprite({
+		src:"image/bob.png",
+		size: new Vector(32,32),
+		anim:[
+			{fps:0, row: 0}, // idle
+			{fps:10, row: 1} // walk
+		]
+	});
+	bob.rect.pos = new Vector(screen_size.x/2, screen_size.y/2);
+	
+	bob.update = function()
+	{
+		bob.move(bob_move);
+	}
+	
+	var scene = new Scene(canvas);
+	scene.background_color = '#333'
+	
+	scene.group.sprites.push(bob);
+	
+	scene.load();
+}
+
+window.onkeydown = function(e)
+{
+	var keyNum = getKeyNum(e);
+	
+	bob.current_anim = BOB_ANIM_WALK;
+	
+	switch (keyNum)
+	{
+		case 37: //LEFT
+			bob.angle = 90;
+			bob_move.x = -BOB_SPEED;
+			break;
+		case 39: //RIGHT
+			bob.angle = -90;
+			bob_move.x = BOB_SPEED;
+		break;
+		case 40: //DOWN
+			bob.angle = 0;
+			bob_move.y = BOB_SPEED;
+		break;
+		case 38: //UP
+			bob.angle = 180;
+			bob_move.y = -BOB_SPEED;
+		break;
+	}
+}
+window.onkeyup= function(e)
+{
+	var keyNum = getKeyNum(e);
+	
+	switch (keyNum)
+	{
+		case 37: //LEFT
+		case 39: //RIGHT
+			bob_move.x = 0;
+		break;
+		case 40: //DOWN
+		case 38: //UP
+			bob_move.y = 0;
+		break;
+	}
+	
+	if (bob_move.x == 0 && bob_move.y == 0 && bob.current_anim == BOB_ANIM_WALK)
+	{
+		bob.set_anim(BOB_ANIM_IDLE);
+	}
+}
+
+</script>
+<style>
+</style>
+</head>
+
+<body>
+	<canvas id="game" width="640" height="480">
+	<p>Your browser does not support the canvas element.</p>
+	</canvas>
+	<div id="debug"></div>
+</body>
+</html>

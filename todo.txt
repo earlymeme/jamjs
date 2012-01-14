@@ -1,0 +1,9 @@
+* TODO *
+
+Framework
+	save
+
+Shooting bob
+	popup gameover
+	mainMenu scene
+	sounds

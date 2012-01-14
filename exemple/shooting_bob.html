@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>untitled</title>
+	<meta http-equiv="content-type" content="text/html;charset=utf-8" />
+	
+<script src="../js/jsgame.01.js"></script>
+<script>
+
+var BOB_SPEED = 3;
+var BOB_ANIM_IDLE = 0;
+var BOB_ANIM_WALK = 1;
+
+var BULLET_SPEED = 10;
+
+var BIRD_SPEED = 2;
+
+var canvas;
+var screen_size = new Vector(640, 480);
+
+var bob;
+var bob_move = new Vector();
+
+var base_bullet;
+var bullets;
+
+var base_bird;
+var birds;
+
+var nb_to_spawn = 0;
+var spawners = [];
+
+var score = 0;
+var score_t = null;
+var wave_t = null;
+
+var debug;
+
+function shoot(pos)
+{
+	direction = new Vector();
+	
+	switch (bob.angle)
+	{
+		case 90: //LEFT
+			direction.x = -BULLET_SPEED;
+			break;
+		case -90: //RIGHT
+			direction.x = BULLET_SPEED;
+			break;
+		case 180: //TOP
+			direction.y = -BULLET_SPEED;
+			break;
+		case 0: //DOWN
+			direction.y = BULLET_SPEED;
+			break;
+	}
+	
+	var bullet = base_bullet.clone();
+	bullet.rect.center(pos);
+	bullet.speed = direction;
+	
+	bullet.update = function()
+	{
+		this.move(this.speed);
+		
+		// out of screen
+		if (this.rect.right() < 0
+			|| this.rect.left() > screen_size.x
+			|| this.rect.bottom() < 0
+			|| this.rect.top() > screen_size.y
+		)
+		{
+			bullets.remove(this);
+		}
+	}
+	
+	bullets.sprites.push(bullet);
+}
+
+function check_bird(need_incr)
+{
+	if (birds.sprites.length == 0)
+	{
+		if(need_incr) nb_to_spawn += 1;
+		spawn(nb_to_spawn);
+	}
+	update_hud();
+}
+
+function update_hud()
+{
+	//debug.innerHTML = 'score: '+ score +' wave: '+ nb_to_spawn;
+	score_t.text = score;
+	wave_t.text  = nb_to_spawn;
+}
+
+function spawn(nb)
+{
+	var i=0;
+	for (i; i < nb; i++)
+	{
+		var speed = new Vector();
+		var spawner_index = i % spawners.length;
+		var angle = 0;
+		var dir_angle = 0;
+		
+		if (spawners[spawner_index]['dir'].x > 0 && spawners[spawner_index]['dir'].y == 0)
+		{
+			angle = -90;
+			dir_angle = 0;
+		}
+		else if (spawners[spawner_index]['dir'].x == 0 && spawners[spawner_index]['dir'].y > 0)
+		{
+			angle = 0;
+			dir_angle = -90;
+		}
+		else if (spawners[spawner_index]['dir'].x < 0 && spawners[spawner_index]['dir'].y == 0)
+		{
+			angle = 90;
+			dir_angle = 180;
+		}
+		else if (spawners[spawner_index]['dir'].x == 0 && spawners[spawner_index]['dir'].y < 0)
+		{
+			angle = 180;
+			dir_angle = 90;
+		}
+		
+		dir_angle += rand_int(-45, 45);
+		speed = getVectFromSpeedAndAngle(dir_angle, BIRD_SPEED);
+		
+		var bird = base_bird.clone();
+		bird.rect.pos.x = spawners[spawner_index]['pos'].x;
+		bird.rect.pos.y = spawners[spawner_index]['pos'].y;
+		bird.speed = speed;
+		bird.angle = angle;
+		
+		bird.update = function()
+		{
+			var j=0;
+			this.move(this.speed);
+			
+			// out of screen
+			if (this.rect.right() < 0
+				|| this.rect.left() > screen_size.x
+				|| this.rect.bottom() < 0
+				|| this.rect.top() > screen_size.y
+			)
+			{
+				score -= 1;
+				birds.remove(this);
+				check_bird(false);
+			}
+			
+			// collide with bullets
+			for (j = 0; j < bullets.sprites.length ; j++)
+			{
+				if (this.collideSprite(bullets.sprites[j]))
+				{
+					birds.remove(this);
+					bullets.remove(bullets.sprites[j]);
+					
+					score += 1;
+					
+					check_bird(true);
+					break;
+				}
+			}
+		}
+		
+		birds.sprites.push(bird);
+	}
+}
+
+window.onload = function()
+{
+	debug = document.getElementById("debug");
+	
+	canvas = new Canvas(document.getElementById('game'), screen_size);
+	
+	// BOB
+	bob = new Sprite({
+		src:"image/bob.png",
+		size: new Vector(32,32),
+		anim:[
+			{fps:0, row: 0},
+			{fps:10, row: 1}
+		]
+	});
+	bob.rect.pos = new Vector(screen_size.x/2, screen_size.y/2);
+	
+	bob.update = function()
+	{
+		bob.move(bob_move);
+		
+		var i=0;
+		for (i; i < birds.sprites.length ; i++)
+		{
+			if (bob.collideSprite(birds.sprites[i]))
+			{
+				scene.stop();
+				debug.innerHTML = 'GAME OVER! score: '+ score +' wave: '+ nb_to_spawn;
+				break;
+			}
+		}
+	}
+	
+	// BULLET
+	base_bullet = new Sprite({
+		src:"image/bullet_anim.png",
+		size: new Vector(16,16),
+		anim:[{fps:10}]
+	});
+	bullets = new SpriteGroup();
+	
+	// BIRD
+	base_bird = new Sprite({
+		src:"image/bird.png",
+		size: new Vector(32,32),
+		anim:[{fps:10}]
+	});
+	birds = new SpriteGroup();
+	
+	// SPAWNER
+	spawners.push(
+		{pos: new Vector(0, screen_size.y/2), dir: new Vector(1, 0)},
+		{pos: new Vector(screen_size.x/2, 0), dir: new Vector(0, 1)},
+		{pos: new Vector(screen_size.x, screen_size.y/2), dir: new Vector(-1, 0)},
+		{pos: new Vector(screen_size.x/2, screen_size.y), dir: new Vector(0, -1)}
+	);
+	
+	// HUD
+	var hud = new Sprite({
+		src:"image/hud.png",
+	});
+	hud.rect.pos.y = 15;
+	hud.rect.pos.x = screen_size.x - 112 - 15;
+	
+	// BACKGROUND
+	var background = new Sprite({
+		src:"image/background.png",
+	});
+	
+	// Hud Text
+	score_t = new Text();
+	score_t.pos.x = hud.rect.pos.x + 30;
+	score_t.pos.y = hud.rect.pos.y + 15;
+	score_t.text = '0';
+	score_t.style.fillStyle = "#ffcaa6";
+	
+	wave_t = new Text();
+	wave_t.pos.x = hud.rect.pos.x + 56 + 30;
+	wave_t.pos.y = hud.rect.pos.y + 15;
+	wave_t.text = '0';
+	wave_t.style = score_t.style;
+	
+	// Create a scene
+	var scene = new Scene(canvas);
+	//scene.background_color = '#333'
+	
+	// Adding elements to the scene
+	scene.group.sprites.push(background);
+	scene.group.sprites.push(bob);
+	scene.group.sprites.push(bullets);
+	scene.group.sprites.push(birds);
+	scene.group.sprites.push(hud);
+	scene.group.sprites.push(score_t);
+	scene.group.sprites.push(wave_t);
+	
+	// Load the scene
+	var loader = new Loader([base_bullet, base_bird]);
+	loader.onload = function()
+	{
+		window.onkeydown = _onkeydown;
+		window.onkeyup = _onkeyup;
+		
+		scene.start = function()
+		{
+			check_bird(true);
+		}
+		scene.load();
+	}
+	loader.load();
+}
+
+function _onkeydown(e)
+{
+	var keyNum = getKeyNum(e);
+	
+	switch (keyNum)
+	{
+		case 37: //LEFT
+			bob.current_anim = BOB_ANIM_WALK;
+			bob.angle = 90;
+			bob_move.x = -BOB_SPEED;
+			break;
+		case 39: //RIGHT
+			bob.current_anim = BOB_ANIM_WALK;
+			bob.angle = -90;
+			bob_move.x = BOB_SPEED;
+		break;
+		case 40: //DOWN
+			bob.current_anim = BOB_ANIM_WALK;
+			bob.angle = 0;
+			bob_move.y = BOB_SPEED;
+		break;
+		case 38: //UP
+			bob.current_anim = BOB_ANIM_WALK;
+			bob.angle = 180;
+			bob_move.y = -BOB_SPEED;
+		break;
+	}
+}
+function _onkeyup(e)
+{
+	var keyNum = getKeyNum(e);
+	
+	switch (keyNum)
+	{
+		case 37: //LEFT
+		case 39: //RIGHT
+			bob_move.x = 0;
+		break;
+		case 40: //DOWN
+		case 38: //UP
+			bob_move.y = 0;
+		break;
+		case 32: //space
+			shoot(
+				bob.rect.center()
+			);
+		break;
+		case 83: //s
+			spawn(2);
+		break;
+	}
+	
+	if (bob_move.x == 0 && bob_move.y == 0 && bob.current_anim == BOB_ANIM_WALK)
+	{
+		bob.set_anim(BOB_ANIM_IDLE);
+	}
+}
+
+</script>
+<style>
+</style>
+</head>
+
+<body>
+	<canvas id="game" width="640" height="480">
+	<p>Your browser does not support the canvas element.</p>
+	</canvas>
+	<div id="debug"></div>
+</body>
+</html>

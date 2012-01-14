@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>untitled</title>
+	<meta http-equiv="content-type" content="text/html;charset=utf-8" />
+	
+<script src="../js/jsgame.01.js"></script>
+<script>
+
+var canvas;
+var screen_size = new Vector(640, 480);
+
+window.onload = function()
+{
+	var ball;
+	var ball_speed = new Vector(2, 2);
+	var scene;
+	
+	// Init the canvas
+	canvas = new Canvas(document.getElementById('game'), screen_size);
+	
+	// Create a ball sprite
+	ball = new Sprite({src:"image/bullet.png"});
+	ball.rect.pos = new Vector(screen_size.x/2, screen_size.y/2);
+	
+	// The update loop of the ball
+	ball.update = function()
+	{
+		// Move the ball with the speed
+		ball.move(ball_speed);
+		
+		// Bounce against the screen
+		if (ball.rect.left() < 0 || ball.rect.right() > screen_size.x)
+		{
+			ball_speed.x = -ball_speed.x;
+		}
+		if (ball.rect.top() < 0 || ball.rect.bottom() > screen_size.y)
+		{
+			ball_speed.y = -ball_speed.y;
+		}
+	}
+	
+	// Create a scene
+	scene = new Scene(canvas);
+	scene.background_color = '#333';
+	
+	// Add the ball to the scene
+	scene.group.sprites.push(ball);
+	
+	// Load and start the scene
+	scene.load();
+}
+</script>
+<style>
+</style>
+</head>
+
+<body>
+	<canvas id="game" width="640" height="480">
+	<p>Your browser does not support the canvas element.</p>
+	</canvas>
+	<div id="debug"></div>
+</body>
+</html>
