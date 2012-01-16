@@ -1,22 +1,19 @@
-function Vector(x, y)
+var Vector = Class.extend(
 {
-	var self = this;
-	var init = function () 
+	x: 0,
+	y: 0,
+	
+	init: function(x, y)
 	{
-		if (x) self.x = x;
-		else self.x = 0;
+		if (x) this.x = x;
+		else this.x = 0;
 		
-		if (y) self.y = y;
-		else self.y = 0;
-	};
+		if (y) this.y = y;
+		else this.y = 0;
+	},
 	
-	this.x = 0;
-	this.y = 0;
-	
-	this.toString = function ()
+	toString: function()
 	{
-		return self.x +'/'+ self.y;
-	};
-	
-	init(x, y);
-}
+		return 'Vector('+ this.x +','+ this.y +')';
+	}
+});

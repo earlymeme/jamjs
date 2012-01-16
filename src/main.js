@@ -1,3 +1,4 @@
+#include 'Core/Class.js';
 #include 'Core/Canvas.js';
 #include 'Core/Loader.js';
 
@@ -14,3 +15,19 @@
 
 var jsgame = {
 };
+
+
+/*
+
+
+var CLASSNAME = Class.extend({
+	
+	init: function()
+	{
+	}
+});
+
+
+
+
+*/

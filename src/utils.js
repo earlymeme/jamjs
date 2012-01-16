@@ -16,7 +16,7 @@ function getVectFromSpeedAndAngle(angle, speed)
 	return vect;
 }
 
-function extend(src, dest)
+function extend_array(src, dest)
 {
 	var k = null;
 	for (k in dest)

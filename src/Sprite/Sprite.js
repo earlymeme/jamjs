@@ -1,37 +1,18 @@
-function Sprite(config) 
+var Sprite = Class.extend(
 {
-	var self = this;
-	var init = function (config) 
-	{
-		var i = null;
-		self.rect = new Rect();
-		self.current_anim = 0;
-		self.angle = 0;
-		self.anim_column = 0;
-		self.timeToNextFrame = 0;
-		
-		//merge default config with actual config
-		extend(config, self.default_config);
-		for (i in config['anim'])
-		{
-			extend(config['anim'][i], self.default_config['anim'][0]);
-		}
-		self.config = config;
-	};
-	
 	//image
-	this.img = null;
-	this.rect = null;
-	this.angle = 0;
+	img: null,
+	rect: null,
+	angle: 0,
 	
 	// animation
-	this.anim_column = 0;
-	this.timeToNextFrame = 0;
+	anim_column: 0,
+	timeToNextFrame: 0,
 	
 	// animation config
-	this.current_anim = 0;
-	this.config = {};
-	this.default_config = {
+	current_anim: 0,
+	config: {},
+	default_config: {
 		src: null,
 		size: null,
 		anim: [
@@ -41,67 +22,87 @@ function Sprite(config)
 				first_frame: 0
 			}
 		]
-	};
+	},
 	
-	this.onload = function () {};
-	this._onload = function () 
+	init: function (config) 
 	{
-		if (!self.config['size'])
+		var i = null;
+		this.rect = new Rect();
+		this.current_anim = 0;
+		this.angle = 0;
+		this.anim_column = 0;
+		this.timeToNextFrame = 0;
+		
+		//merge default config with actual config
+		extend_array(config, this.default_config);
+		for (i in config['anim'])
 		{
-			self.config['size'] = new Vector(
-				self.img.width,
-				self.img.height
+			extend_array(config['anim'][i], this.default_config['anim'][0]);
+		}
+		this.config = config;
+	},
+	
+	onload: function () {},
+	_onload: function ()
+	{
+		if (!this.config['size'])
+		{
+			this.config['size'] = new Vector(
+				this.img.width,
+				this.img.height
 			);
-			self.rect.size.x = self.img.width;
-			self.rect.size.y = self.img.height;
+			this.rect.size.x = this.img.width;
+			this.rect.size.y = this.img.height;
 		}
 		else
 		{
-			var x = self.config['size'].x;
-			var y = self.config['size'].y;
-			self.config['size'] = new Vector(
-				self.img.width,
-				self.img.height
+			var x = this.config['size'].x;
+			var y = this.config['size'].y;
+			this.config['size'] = new Vector(
+				this.img.width,
+				this.img.height
 			);
-			self.rect.size.x = x;
-			self.rect.size.y = y;
+			this.rect.size.x = x;
+			this.rect.size.y = y;
 		}
 		
-		self.onload();
-	};
+		this.onload();
+	},
 	
-	this.load = function ()
+	load: function ()
 	{
-		self.img = new Image();
-		self.img.src = self.config['src'];
-		self.img.onload = self._onload;
-	};
+		var self = this;
+		
+		this.img = new Image();
+		this.img.onload = function() {self._onload.apply(self, arguments)};
+		this.img.src = this.config['src'];
+	},
 	
-	this._blit = function (canvas) 
+	_blit: function (canvas) 
 	{
 		//see http://www.whatwg.org/specs/web-apps/current-work/multipage/the-canvas-element.html#dom-context-2d-drawimage
 		canvas.ctx.drawImage(
-			self.img, //image
-			self.rect.size.x*self.anim_column, //sx
-			self.rect.size.y*self.config['anim'][self.current_anim]['row'], //sy
-			self.rect.size.x, //sw
-			self.rect.size.y, //sh
-			self.rect.pos.x, //dx
-			self.rect.pos.y, //dy
-			self.rect.size.x, //dw
-			self.rect.size.y //dy
+			this.img, //image
+			this.rect.size.x*this.anim_column, //sx
+			this.rect.size.y*this.config['anim'][this.current_anim]['row'], //sy
+			this.rect.size.x, //sw
+			this.rect.size.y, //sh
+			this.rect.pos.x, //dx
+			this.rect.pos.y, //dy
+			this.rect.size.x, //dw
+			this.rect.size.y //dy
 		);
-	};
+	},
 	
-	this.draw = function (canvas)
+	draw: function (canvas)
 	{
-		if (self.angle != 0)
+		if (this.angle != 0)
 		{
 			canvas.ctx.save();
 			
 			var tr = new Vector(
-				self.rect.pos.x + (self.rect.size.x/2),
-				self.rect.pos.y + (self.rect.size.y/2)
+				this.rect.pos.x + (this.rect.size.x/2),
+				this.rect.pos.y + (this.rect.size.y/2)
 			);
 			
 			//put the rotation point at the center of the sprite
@@ -111,7 +112,7 @@ function Sprite(config)
 			);
 			
 			//rotate by angle
-			canvas.ctx.rotate(self.angle * Math.PI /180);
+			canvas.ctx.rotate(this.angle * Math.PI /180);
 			
 			//put the rotation points back to the origins
 			canvas.ctx.translate(
@@ -120,35 +121,35 @@ function Sprite(config)
 			);
 		}
 		
-		self._blit(canvas);
+		this._blit(canvas);
 		
-		if (self.angle != 0)
+		if (this.angle != 0)
 		{
 			canvas.ctx.restore();
 		}
-	};
-	this._draw = function (canvas)
+	},
+	_draw: function (canvas)
 	{
-		self.draw(canvas);
-	};
+		this.draw(canvas);
+	},
 	
-	this.update = function (delay) {}
-	this._update = function (delay)
+	update: function (delay) {},
+	_update: function (delay)
 	{
-		self.update_anim(delay);
-		self.update();
-	};
+		this.update_anim(delay);
+		this.update();
+	},
 	
-	this.move = function (vect)
+	move: function (vect)
 	{
 		this.rect.pos.x += vect.x;
 		this.rect.pos.y += vect.y;
-	};
+	},
 	
-	this.clone = function ()
+	clone: function ()
 	{
-		var config = self.config;
-		var rect = self.rect.clone();
+		var config = this.config;
+		var rect = this.rect.clone();
 		var x = rect.size.x;
 		var y = rect.size.y;
 		
@@ -159,82 +160,80 @@ function Sprite(config)
 		config['size'].x = x;
 		config['size'].y = y;
 		
-		var newone = new Sprite(self.config);
-		newone.img = self.img;
+		var newone = new Sprite(this.config);
+		newone.img = this.img;
 		newone.rect = rect;
-		newone.angle = self.angle;
-		newone.anim_column = self.anim_column;
-		newone.timeToNextFrame = self.timeToNextFrame;
-		newone.current_anim = self.current_anim;
+		newone.angle = this.angle;
+		newone.anim_column = this.anim_column;
+		newone.timeToNextFrame = this.timeToNextFrame;
+		newone.current_anim = this.current_anim;
 		
 		newone._onload();
 		
 		return newone;
-	};
+	},
 	
 	//-------- ANIMATIONS ----------//
 	
-	this.update_anim = function (delay) 
+	update_anim: function (delay) 
 	{
-		if (self.config['anim'][self.current_anim]['fps'] > 0)
+		if (this.config['anim'][this.current_anim]['fps'] > 0)
 		{
-			self.timeToNextFrame += delay/1000.0;
+			this.timeToNextFrame += delay/1000.0;
 			
-			if (self.timeToNextFrame >= 1/self.config['anim'][self.current_anim]['fps'])
+			if (this.timeToNextFrame >= 1/this.config['anim'][this.current_anim]['fps'])
 			{
-				self.anim_column += 1;
-				if (self.anim_column >= self.config['size'].x/self.rect.size.x)
+				this.anim_column += 1;
+				if (this.anim_column >= this.config['size'].x/this.rect.size.x)
 				{
-					self.anim_column = self.config['anim'][self.current_anim]['first_frame'];
+					this.anim_column = this.config['anim'][this.current_anim]['first_frame'];
 				}
 				
-				self.timeToNextFrame = 0;
+				this.timeToNextFrame = 0;
 			}
 		}
-	};
+	},
 	
-	this.set_anim = function (anim)
+	set_anim: function (anim)
 	{
-		self.current_anim = anim;
-		self.anim_column = 0;
-	};
+		this.current_anim = anim;
+		this.anim_column = 0;
+	},
 	
 	//-------- COLIDE TEST ---------//
 	
 	/**
 	 * return true if the sprite collide the pt
 	 */
-	this.collidePoint = function (pt)
+	collidePoint: function (pt)
 	{
-		return pt.x >= self.rect.pos.x &&
-			pt.x <= self.rect.pos.x + self.rect.size.x &&
-			pt.y >= self.rect.pos.y &&
-			pt.y <= self.rect.pos.y + self.rect.size.y;
-	};
+		return pt.x >= this.rect.pos.x &&
+			pt.x <= this.rect.pos.x + this.rect.size.x &&
+			pt.y >= this.rect.pos.y &&
+			pt.y <= this.rect.pos.y + this.rect.size.y;
+	},
 	
 	/**
 	 * return true if the sprite collide the rect (use bounding box)
 	 */
-	this.collideRect = function (pos, size)
+	collideRect: function (pos, size)
 	{
-		var x1 = (self.rect.pos.x < pos.x && self.rect.pos.x + self.rect.size.x >= pos.x);
-		var y1 = (self.rect.pos.y < pos.y && self.rect.pos.y + self.rect.size.y >= pos.y);
-		var x2 = (pos.x < self.rect.pos.x && pos.x + size.x >= self.rect.pos.x);
-		var y2 = (pos.y < self.rect.pos.y && pos.y + size.y >= self.rect.pos.y);
+		var x1 = (this.rect.pos.x < pos.x && this.rect.pos.x + this.rect.size.x >= pos.x);
+		var y1 = (this.rect.pos.y < pos.y && this.rect.pos.y + this.rect.size.y >= pos.y);
+		var x2 = (pos.x < this.rect.pos.x && pos.x + size.x >= this.rect.pos.x);
+		var y2 = (pos.y < this.rect.pos.y && pos.y + size.y >= this.rect.pos.y);
 		
 		return (x1 || x2) && (y1 || y2);
-	};
+	},
 	
 	/**
 	 * return true if the sprite collide the rect (use bounding box)
 	 */
-	this.collideSprite = function (sprite)
+	collideSprite: function (sprite)
 	{
-		return self.collideRect(
+		return this.collideRect(
 			sprite.rect.pos,
 			sprite.rect.size
 		);
-	};
-	
-	init(config);
-}
+	}
+});

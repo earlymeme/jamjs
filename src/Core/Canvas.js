@@ -1,27 +1,21 @@
-function Canvas(canvas_elem, size) 
-{
-	var self = this;
-	var init = function (canvas_elem, size) 
+var Canvas = Class.extend({
+	
+	ctx: null,
+	size: null,
+	
+	init: function(canvas_elem, size)
 	{
-		self.ctx = canvas_elem.getContext("2d");
-		self.size = size;
-	};
+		this.ctx = canvas_elem.getContext("2d");
+		this.size = size;
+	},
 	
-	this.ctx = null;
-	this.size = null;
-	
-	this.clear = function (color)
+	clear: function (color)
 	{
 		if (color)
 		{
-			self.ctx.fillStyle = color;
-			self.ctx.fillRect(0, 0, self.size.x, self.size.y);
+			this.ctx.fillStyle = color;
 		}
-		else
-		{
-			self.ctx.clearRect(0, 0, self.size.x, self.size.y);
-		}
-	};
-	
-	init(canvas_elem, size);
-}
+		
+		this.ctx.clearRect(0, 0, this.size.x, this.size.y);
+	}
+});

@@ -1,51 +1,49 @@
-function Loader(items) 
+var Loader = Class.extend(
 {
-	var self = this;
-	var init = function (items) 
-	{
-		self.items = items ? items : [];
-	};
+	items: [],
+	nb_loaded: 0,
 	
-	this.items = [];
-	this.nb_loaded = 0;
-	
-	this.load = function ()
+	init: function (items) 
 	{
-		if (self.items.length == 0)
+		this.items = items ? items : [];
+	},
+	
+	load: function ()
+	{
+		var self = this;
+		if (this.items.length == 0)
 		{
-			self._onload();
+			this._onload();
 		}
 		else
 		{
-			for (var i = 0; i < self.items.length; i++)
+			for (var i = 0; i < this.items.length; i++)
 			{
-				self.items[i].onload = self._load_update;
-				self.items[i].load();
+				this.items[i].onload = function() {self._load_update.apply(self, arguments)};
+				this.items[i].load();
 			}
 		}
-	};
+	},
 	
-	this.load_update = function () {};
-	this._load_update = function ()
+	load_update: function () {},
+	_load_update: function ()
 	{
-		self.nb_loaded += 1;
+		this.nb_loaded += 1;
 		
-		if (self.nb_loaded == self.items.length)
+		if (this.nb_loaded == this.items.length)
 		{
-			self._onload();
+			this._onload();
 		}
 		else
 		{
-			self.load_update();
+			this.load_update();
 		}
-	};
+	},
 	
-	this.onload = function () {};
-	this._onload = function ()
+	onload: function () {},
+	_onload: function ()
 	{
-		self.items = [];
-		self.onload();
-	};
-	
-	init(items);
-}
+		//this.items = [];
+		this.onload();
+	}
+});

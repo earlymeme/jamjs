@@ -1,66 +1,63 @@
-function Rect(pos, size) 
+var Rect = Class.extend(
 {
-	var self = this;
-	var init = function (pos, size) 
+	pos: null,
+	size: null,
+	
+	init: function (pos, size) 
 	{
-		if (pos) self.pos = pos;
-		else self.pos = new Vector();
+		if (pos) this.pos = pos;
+		else this.pos = new Vector();
 		
-		if (size) self.size = size;
-		else self.size = new Vector();
-	};
+		if (size) this.size = size;
+		else this.size = new Vector();
+	},
 	
-	this.pos = null;
-	this.size = null;
-	
-	this.left = function ()
+	left: function ()
 	{
-		return self.pos.x;
-	};
+		return this.pos.x;
+	},
 	
-	this.right = function ()
+	right: function ()
 	{
-		return self.pos.x + self.size.x;
-	};
+		return this.pos.x + this.size.x;
+	},
 	
-	this.top = function ()
+	top: function ()
 	{
-		return self.pos.y;
-	};
+		return this.pos.y;
+	},
 	
-	this.bottom = function ()
+	bottom: function ()
 	{
-		return self.pos.y + self.size.y;
-	};
+		return this.pos.y + this.size.y;
+	},
 	
-	this.center = function (pos)
+	center: function (pos)
 	{
 		if(pos)
 		{
-//			self.pos.x = pos.x - size.x/2;
-//			self.pos.y = pos.y - size.y/2;
-			self.pos.x = pos.x - self.size.x/2;
-			self.pos.y = pos.y - self.size.y/2;
+//			this.pos.x = pos.x - size.x/2;
+//			this.pos.y = pos.y - size.y/2;
+			this.pos.x = pos.x - this.size.x/2;
+			this.pos.y = pos.y - this.size.y/2;
 		}
 		
 		return new Vector(
-			self.pos.x + self.size.x/2,
-			self.pos.y + self.size.y/2
+			this.pos.x + this.size.x/2,
+			this.pos.y + this.size.y/2
 		);
-	};
+	},
 	
-	this.clone = function ()
+	clone: function ()
 	{
 		return new Rect(
-			new Vector(self.pos.x, self.pos.y),
-			new Vector(self.size.x, self.size.y)
+			new Vector(this.pos.x, this.pos.y),
+			new Vector(this.size.x, this.size.y)
 		);
-	};
+	},
 	
-	this.toString = function ()
+	toString: function ()
 	{
-		return self.pos.toString() +' - '+ self.size.toString();
-	};
-	
-	init(pos, size);
-}
+		return this.pos.toString() +' - '+ this.size.toString();
+	}
+});
