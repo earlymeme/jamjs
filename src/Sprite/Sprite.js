@@ -1,4 +1,4 @@
-var Sprite = Class.extend(
+var Sprite = Loadable.extend(
 {
 	//image
 	img: null,
@@ -42,7 +42,6 @@ var Sprite = Class.extend(
 		this.config = config;
 	},
 	
-	onload: function () {},
 	_onload: function ()
 	{
 		if (!this.config['size'])

@@ -62,25 +62,21 @@
     return Class;
   };
 })();
-var Canvas = Class.extend({
-	
-	ctx: null,
-	size: null,
-	
-	init: function(canvas_elem, size)
+var Loadable = Class.extend(
+{
+	init: function () 
 	{
-		this.ctx = canvas_elem.getContext("2d");
-		this.size = size;
 	},
 	
-	clear: function (color)
+	load: function ()
 	{
-		if (color)
-		{
-			this.ctx.fillStyle = color;
-		}
-		
-		this.ctx.clearRect(0, 0, this.size.x, this.size.y);
+		this._onload();
+	},
+	
+	onload: function () {},
+	_onload: function ()
+	{
+		this.onload();
 	}
 });
 var Loader = Class.extend(
@@ -130,6 +126,27 @@ var Loader = Class.extend(
 	{
 		//this.items = [];
 		this.onload();
+	}
+});
+var Canvas = Class.extend({
+	
+	ctx: null,
+	size: null,
+	
+	init: function(canvas_elem, size)
+	{
+		this.ctx = canvas_elem.getContext("2d");
+		this.size = size;
+	},
+	
+	clear: function (color)
+	{
+		if (color)
+		{
+			this.ctx.fillStyle = color;
+		}
+		
+		this.ctx.clearRect(0, 0, this.size.x, this.size.y);
 	}
 });
 
@@ -216,7 +233,7 @@ var Rect = Class.extend(
 	}
 });
 
-var Sprite = Class.extend(
+var Sprite = Loadable.extend(
 {
 	//image
 	img: null,
@@ -260,7 +277,6 @@ var Sprite = Class.extend(
 		this.config = config;
 	},
 	
-	onload: function () {},
 	_onload: function ()
 	{
 		if (!this.config['size'])
@@ -496,7 +512,7 @@ var SpriteGroup = Loader.extend(
 		}
 	}
 });
-var Text = Class.extend(
+var Text = Loadable.extend(
 {
 	TYPE_STROKE: 1,
 	TYPE_FILL: 2,
@@ -509,18 +525,6 @@ var Text = Class.extend(
 	init: function () 
 	{
 		this.pos = new Vector();
-	},
-	
-	onload: function () {},
-	_onload: function () 
-	{
-		this.onload();
-	},
-	
-	load: function ()
-	{
-		// nothing to load
-		this.onload();
 	},
 	
 	draw: function (canvas)

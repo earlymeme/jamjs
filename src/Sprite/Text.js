@@ -1,4 +1,4 @@
-var Text = Class.extend(
+var Text = Loadable.extend(
 {
 	TYPE_STROKE: 1,
 	TYPE_FILL: 2,
@@ -11,18 +11,6 @@ var Text = Class.extend(
 	init: function () 
 	{
 		this.pos = new Vector();
-	},
-	
-	onload: function () {},
-	_onload: function () 
-	{
-		this.onload();
-	},
-	
-	load: function ()
-	{
-		// nothing to load
-		this.onload();
 	},
 	
 	draw: function (canvas)

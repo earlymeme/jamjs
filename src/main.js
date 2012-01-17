@@ -1,6 +1,7 @@
 #include 'Core/Class.js';
-#include 'Core/Canvas.js';
+#include 'Core/Loadable.js';
 #include 'Core/Loader.js';
+#include 'Core/Canvas.js';
 
 #include 'Geom/Vector.js';
 #include 'Geom/Rect.js';
