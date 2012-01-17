@@ -3,14 +3,16 @@
 Framework
 	save
 	
+	remove old unused files
+	
 	use Class
 		Core/Canvas.js - OK
 		Core/Loader.js - OK
 		Geom/Vector.js - OK
 		Geom/Rect.js - OK
-		Sprite/Sprite.js ~OK
+		Sprite/Sprite.js ~OK (use loadable!)
+		Sprite/Text.js - OK (use loadable?)
 		Sprite/SpriteGroup.js - OK
-		Sprite/Text.js
 		Scene/Scene.js
 
 Shooting bob

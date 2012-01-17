@@ -1,79 +1,76 @@
-function Text() 
+var Text = Class.extend(
 {
-	var self = this;
-	var init = function () 
+	TYPE_STROKE: 1,
+	TYPE_FILL: 2,
+	
+	pos: null,
+	text: '',
+	type: this.TYPE_FILL,
+	style: {fillStyle: "#fff", lineWidth:1, font:"12px sans-serif"},
+	
+	init: function () 
 	{
-		self.pos = new Vector();
-	};
+		this.pos = new Vector();
+	},
 	
-	this.TYPE_STROKE = 1;
-	this.TYPE_FILL = 2;
-	
-	this.pos = null;
-	this.text = '';
-	this.type = this.TYPE_FILL;
-	this.style = {fillStyle: "#fff", lineWidth:1, font:"12px sans-serif"};
-	
-	this.onload = function () {};
-	this._onload = function () 
+	onload: function () {},
+	_onload: function () 
 	{
-		self.onload();
-	};
+		this.onload();
+	},
 	
-	this.load = function ()
+	load: function ()
 	{
 		// nothing to load
-		self.onload();
-	};
+		this.onload();
+	},
 	
-	this.draw = function (canvas)
+	draw: function (canvas)
 	{
 		canvas.ctx.save();
 		
 		var s;
-		for (s in self.style)
+		for (s in this.style)
 		{
-			canvas.ctx[s] = self.style[s];
+			canvas.ctx[s] = this.style[s];
 		}
 		
-		if (self.type == self.TYPE_FILL)
+		if (this.type == this.TYPE_FILL)
 		{
-			canvas.ctx.fillText(self.text, self.pos.x, self.pos.y);
+			canvas.ctx.fillText(this.text, this.pos.x, this.pos.y);
 		}
 		else
 		{
-			canvas.ctx.strokeText(self.text, self.pos.x, self.pos.y);
+			canvas.ctx.strokeText(this.text, this.pos.x, this.pos.y);
 		}
 		
 		canvas.ctx.restore();
-	};
-	this._draw = function (canvas)
+	},
+	_draw: function (canvas)
 	{
-		self.draw(canvas);
-	};
+		this.draw(canvas);
+	},
 	
-	this.update = function (delay) {}
-	this._update = function (delay)
+	update: function (delay) {},
+	_update: function (delay)
 	{
-		self.update();
-	};
+		this.update();
+	},
 	
-	this.move = function (vect)
+	move: function (vect)
 	{
-		this.pos.x += vect.x;
-		this.pos.y += vect.y;
-	};
+		pos.x += vect.x;
+		pos.y += vect.y;
+	},
 	
-	this.clone = function ()
+	clone: function ()
 	{
 		var newone = new Text();
-		newone.pos = self.pos;
-		newone.text = self.text;
-		newone.type = self.type;
-		newone.style = self.style;
+		newone.pos = this.pos;
+		newone.text = this.text;
+		newone.type = this.type;
+		newone.style = this.style;
 		
 		return newone;
-	};
-	
-	init();
-}
+	}
+});

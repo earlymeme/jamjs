@@ -496,161 +496,160 @@ var SpriteGroup = Loader.extend(
 		}
 	}
 });
-function Text() 
+var Text = Class.extend(
 {
-	var self = this;
-	var init = function () 
+	TYPE_STROKE: 1,
+	TYPE_FILL: 2,
+	
+	pos: null,
+	text: '',
+	type: this.TYPE_FILL,
+	style: {fillStyle: "#fff", lineWidth:1, font:"12px sans-serif"},
+	
+	init: function () 
 	{
-		self.pos = new Vector();
-	};
+		this.pos = new Vector();
+	},
 	
-	this.TYPE_STROKE = 1;
-	this.TYPE_FILL = 2;
-	
-	this.pos = null;
-	this.text = '';
-	this.type = this.TYPE_FILL;
-	this.style = {fillStyle: "#fff", lineWidth:1, font:"12px sans-serif"};
-	
-	this.onload = function () {};
-	this._onload = function () 
+	onload: function () {},
+	_onload: function () 
 	{
-		self.onload();
-	};
+		this.onload();
+	},
 	
-	this.load = function ()
+	load: function ()
 	{
 		// nothing to load
-		self.onload();
-	};
+		this.onload();
+	},
 	
-	this.draw = function (canvas)
+	draw: function (canvas)
 	{
 		canvas.ctx.save();
 		
 		var s;
-		for (s in self.style)
+		for (s in this.style)
 		{
-			canvas.ctx[s] = self.style[s];
+			canvas.ctx[s] = this.style[s];
 		}
 		
-		if (self.type == self.TYPE_FILL)
+		if (this.type == this.TYPE_FILL)
 		{
-			canvas.ctx.fillText(self.text, self.pos.x, self.pos.y);
+			canvas.ctx.fillText(this.text, this.pos.x, this.pos.y);
 		}
 		else
 		{
-			canvas.ctx.strokeText(self.text, self.pos.x, self.pos.y);
+			canvas.ctx.strokeText(this.text, this.pos.x, this.pos.y);
 		}
 		
 		canvas.ctx.restore();
-	};
-	this._draw = function (canvas)
+	},
+	_draw: function (canvas)
 	{
-		self.draw(canvas);
-	};
+		this.draw(canvas);
+	},
 	
-	this.update = function (delay) {}
-	this._update = function (delay)
+	update: function (delay) {},
+	_update: function (delay)
 	{
-		self.update();
-	};
+		this.update();
+	},
 	
-	this.move = function (vect)
+	move: function (vect)
 	{
-		this.pos.x += vect.x;
-		this.pos.y += vect.y;
-	};
+		pos.x += vect.x;
+		pos.y += vect.y;
+	},
 	
-	this.clone = function ()
+	clone: function ()
 	{
 		var newone = new Text();
-		newone.pos = self.pos;
-		newone.text = self.text;
-		newone.type = self.type;
-		newone.style = self.style;
+		newone.pos = this.pos;
+		newone.text = this.text;
+		newone.type = this.type;
+		newone.style = this.style;
 		
 		return newone;
-	};
-	
-	init();
-}
+	}
+});
 
-function Scene(canvas) 
+var Scene = Class.extend(
 {
-	var self = this;
-	var init = function () 
+	background_color: null,
+	
+	canvas: null,
+	group: null,
+	
+	REFRESH_RATE: 1000 / 30,
+	interval_id: 0,
+	last_time: 0,
+	is_paused: false,
+	
+	init : function (canvas) 
 	{
 		//extend(this, new Loader());
 		
-		self.canvas = canvas;
-		self.group = new SpriteGroup();
+		this.canvas = canvas;
+		this.group = new SpriteGroup();
 		
-		self.last_time = new Date().getTime();
-	};
+		this.last_time = new Date().getTime();
+	},
 	
-	this.load = function()
+	load : function()
 	{
-		self.group.onload = self._start;
-		self.group.load();
-	};
+		var self = this;
+		this.group.onload = function() {self._start.apply(self, arguments)};
+		this.group.load();
+	},
 	
-	this.background_color = null;
-	
-	this.canvas = null;
-	this.group = null;
-	
-	this.REFRESH_RATE = 1000 / 30;
-	this.interval_id = 0;
-	this.last_time = 0;
-	this.is_paused = false;
-	
-	this.start = function(){}
-	this._start = function()
+	start : function(){},
+	_start : function()
 	{
-		self.start();
+		this.start();
 		
-		//self.interval_id = setInterval(self._update, self.REFRESH_RATE);
-		self.is_paused = false;
-		self.interval_id = self.set_time_out(0);
-	};
+		//this.interval_id = setInterval(this._update, this.REFRESH_RATE);
+		this.is_paused = false;
+		this.interval_id = this.set_time_out(0);
+	},
 	
-	this.stop = function()
+	stop : function()
 	{
-		//clearInterval(self.interval_id);
-		self.is_paused = true;
-		clearTimeout(self.interval_id);
-	};
+		//clearInterval(this.interval_id);
+		this.is_paused = true;
+		clearTimeout(this.interval_id);
+	},
 	
-	this.update = function(delay) {}
-	this._update = function()
+	update : function(delay) {},
+	_update : function()
 	{
 		var now = new Date().getTime();
-		var delay = now - self.last_time;
+		var delay = now - this.last_time;
 		
-		self.canvas.clear(self.background_color);
+		this.canvas.clear(this.background_color);
 		
-		self.group.update(delay);
-		self.group.draw(self.canvas);
+		this.group.update(delay);
+		this.group.draw(this.canvas);
 		
-		self.update();
+		this.update();
 		
 		var now2 = new Date().getTime();
-		self.interval_id = self.set_time_out(now2 - now);
-		self.last_time = now;
-	};
+		this.interval_id = this.set_time_out(now2 - now);
+		this.last_time = now;
+	},
 	
-	this.set_time_out = function(frame_time)
+	set_time_out : function(frame_time)
 	{
-		if (self.is_paused != true)
+		if (this.is_paused != true)
 		{
-			var millisec = self.REFRESH_RATE - frame_time;
-			return setTimeout(self._update, millisec)
+			var self = this;
+			var millisec = this.REFRESH_RATE - frame_time;
+			return setTimeout(
+				function() {self._update.apply(self, arguments);},
+				millisec
+			)
 		}
-	};
-	
-	init(canvas);
-}
+	}
+});
 
 /**
  * random number between min and max (both side inclusive)
