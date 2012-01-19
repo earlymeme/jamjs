@@ -1,11 +1,24 @@
 var Loader = Class.extend(
 {
-	items: [],
+	items: null,
 	nb_loaded: 0,
 	
-	init: function (items) 
+	id: -1,
+	
+	init: function (_items) 
 	{
-		this.items = items ? items : [];
+		//this.items = items ? items : [];
+		
+		this.items = [];
+		if (_items && _items.length > 0)
+		{
+			for (var k in _items)
+			{
+				this.items.push(_items[k]);
+			}
+		}
+		
+		this.id = rand_int(1, 100);
 	},
 	
 	load: function ()
@@ -19,8 +32,11 @@ var Loader = Class.extend(
 		{
 			for (var i = 0; i < this.items.length; i++)
 			{
-				this.items[i].onload = function() {self._load_update.apply(self, arguments)};
-				this.items[i].load();
+				if (this.items[i] != this)
+				{
+					this.items[i].onload = function() {self._load_update.apply(self, arguments)};
+					this.items[i].load();
+				}
 			}
 		}
 	},

@@ -81,12 +81,25 @@ var Loadable = Class.extend(
 });
 var Loader = Class.extend(
 {
-	items: [],
+	items: null,
 	nb_loaded: 0,
 	
-	init: function (items) 
+	id: -1,
+	
+	init: function (_items) 
 	{
-		this.items = items ? items : [];
+		//this.items = items ? items : [];
+		
+		this.items = [];
+		if (_items && _items.length > 0)
+		{
+			for (var k in _items)
+			{
+				this.items.push(_items[k]);
+			}
+		}
+		
+		this.id = rand_int(1, 100);
 	},
 	
 	load: function ()
@@ -100,8 +113,11 @@ var Loader = Class.extend(
 		{
 			for (var i = 0; i < this.items.length; i++)
 			{
-				this.items[i].onload = function() {self._load_update.apply(self, arguments)};
-				this.items[i].load();
+				if (this.items[i] != this)
+				{
+					this.items[i].onload = function() {self._load_update.apply(self, arguments)};
+					this.items[i].load();
+				}
 			}
 		}
 	},
@@ -308,7 +324,7 @@ var Sprite = Loadable.extend(
 		var self = this;
 		
 		this.img = new Image();
-		this.img.onload = function() {self._onload.apply(self, arguments)};
+		this.img.onload = function() {self._onload.apply(self, arguments);};
 		this.img.src = this.config['src'];
 	},
 	
@@ -473,11 +489,12 @@ var Sprite = Loadable.extend(
 });
 var SpriteGroup = Loader.extend(
 {
+	items: null,
+	
 	init: function () 
 	{
+		this.items = [];
 	},
-	
-	loader: null,
 	
 	update: function(delay)
 	{
@@ -505,12 +522,12 @@ var SpriteGroup = Loader.extend(
 	
 	remove: function(item)
 	{
-		var pos = items.indexOf(item)
+		var pos = this.items.indexOf(item)
 		if (pos >= 0)
 		{
-			items.splice(pos, 1);
+			this.items.splice(pos, 1);
 		}
-	}
+	},
 });
 var Text = Loadable.extend(
 {
@@ -520,7 +537,7 @@ var Text = Loadable.extend(
 	pos: null,
 	text: '',
 	type: this.TYPE_FILL,
-	style: {fillStyle: "#fff", lineWidth:1, font:"12px sans-serif"},
+	style: {fillStyle: "#000", lineWidth:1, font:"12px sans-serif"},
 	
 	init: function () 
 	{
@@ -591,8 +608,6 @@ var Scene = Class.extend(
 	
 	init : function (canvas) 
 	{
-		//extend(this, new Loader());
-		
 		this.canvas = canvas;
 		this.group = new SpriteGroup();
 		
@@ -602,6 +617,7 @@ var Scene = Class.extend(
 	load : function()
 	{
 		var self = this;
+		
 		this.group.onload = function() {self._start.apply(self, arguments)};
 		this.group.load();
 	},

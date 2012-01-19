@@ -76,12 +76,12 @@ function shoot(pos)
 		}
 	}
 	
-	bullets.sprites.push(bullet);
+	bullets.items.push(bullet);
 }
 
 function check_bird(need_incr)
 {
-	if (birds.sprites.length == 0)
+	if (birds.items.length == 0)
 	{
 		if(need_incr) nb_to_spawn += 1;
 		spawn(nb_to_spawn);
@@ -154,12 +154,12 @@ function spawn(nb)
 			}
 			
 			// collide with bullets
-			for (j = 0; j < bullets.sprites.length ; j++)
+			for (j = 0; j < bullets.items.length ; j++)
 			{
-				if (this.collideSprite(bullets.sprites[j]))
+				if (this.collideSprite(bullets.items[j]))
 				{
 					birds.remove(this);
-					bullets.remove(bullets.sprites[j]);
+					bullets.remove(bullets.items[j]);
 					
 					score += 1;
 					
@@ -169,7 +169,7 @@ function spawn(nb)
 			}
 		}
 		
-		birds.sprites.push(bird);
+		birds.items.push(bird);
 	}
 }
 
@@ -195,9 +195,9 @@ window.onload = function()
 		bob.move(bob_move);
 		
 		var i=0;
-		for (i; i < birds.sprites.length ; i++)
+		for (i; i < birds.items.length ; i++)
 		{
-			if (bob.collideSprite(birds.sprites[i]))
+			if (bob.collideSprite(birds.items[i]))
 			{
 				scene.stop();
 				debug.innerHTML = 'GAME OVER! score: '+ score +' wave: '+ nb_to_spawn;
@@ -247,7 +247,7 @@ window.onload = function()
 	score_t.pos.x = hud.rect.pos.x + 30;
 	score_t.pos.y = hud.rect.pos.y + 15;
 	score_t.text = '0';
-	score_t.style.fillStyle = "#ffcaa6";
+	score_t.style.fillStyle = "#ffcaa6"; //FIXME
 	
 	wave_t = new Text();
 	wave_t.pos.x = hud.rect.pos.x + 56 + 30;
@@ -260,13 +260,13 @@ window.onload = function()
 	//scene.background_color = '#333'
 	
 	// Adding elements to the scene
-	scene.group.sprites.push(background);
-	scene.group.sprites.push(bob);
-	scene.group.sprites.push(bullets);
-	scene.group.sprites.push(birds);
-	scene.group.sprites.push(hud);
-	scene.group.sprites.push(score_t);
-	scene.group.sprites.push(wave_t);
+	scene.group.items.push(background);
+	scene.group.items.push(bob);
+	scene.group.items.push(bullets);
+	scene.group.items.push(birds);
+	scene.group.items.push(hud);
+	scene.group.items.push(score_t);
+	scene.group.items.push(wave_t);
 	
 	// Load the scene
 	var loader = new Loader([base_bullet, base_bird]);

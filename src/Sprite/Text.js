@@ -6,7 +6,7 @@ var Text = Loadable.extend(
 	pos: null,
 	text: '',
 	type: this.TYPE_FILL,
-	style: {fillStyle: "#fff", lineWidth:1, font:"12px sans-serif"},
+	style: {fillStyle: "#000", lineWidth:1, font:"12px sans-serif"},
 	
 	init: function () 
 	{

@@ -1,10 +1,11 @@
 var SpriteGroup = Loader.extend(
 {
+	items: null,
+	
 	init: function () 
 	{
+		this.items = [];
 	},
-	
-	loader: null,
 	
 	update: function(delay)
 	{
@@ -32,10 +33,10 @@ var SpriteGroup = Loader.extend(
 	
 	remove: function(item)
 	{
-		var pos = items.indexOf(item)
+		var pos = this.items.indexOf(item)
 		if (pos >= 0)
 		{
-			items.splice(pos, 1);
+			this.items.splice(pos, 1);
 		}
-	}
+	},
 });

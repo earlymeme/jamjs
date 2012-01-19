@@ -12,8 +12,6 @@ var Scene = Class.extend(
 	
 	init : function (canvas) 
 	{
-		//extend(this, new Loader());
-		
 		this.canvas = canvas;
 		this.group = new SpriteGroup();
 		
@@ -23,6 +21,7 @@ var Scene = Class.extend(
 	load : function()
 	{
 		var self = this;
+		
 		this.group.onload = function() {self._start.apply(self, arguments)};
 		this.group.load();
 	},

@@ -73,7 +73,7 @@ var Sprite = Loadable.extend(
 		var self = this;
 		
 		this.img = new Image();
-		this.img.onload = function() {self._onload.apply(self, arguments)};
+		this.img.onload = function() {self._onload.apply(self, arguments);};
 		this.img.src = this.config['src'];
 	},
 	
