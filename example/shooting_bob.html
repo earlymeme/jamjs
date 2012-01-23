@@ -35,6 +35,11 @@ var score = 0;
 var score_t = null;
 var wave_t = null;
 
+var mouse_pos = null;
+var mouse_pressed = false;
+
+var popup_btn;
+
 var debug;
 
 function shoot(pos)
@@ -91,7 +96,6 @@ function check_bird(need_incr)
 
 function update_hud()
 {
-	//debug.innerHTML = 'score: '+ score +' wave: '+ nb_to_spawn;
 	score_t.text = score;
 	wave_t.text  = nb_to_spawn;
 }
@@ -175,9 +179,12 @@ function spawn(nb)
 
 window.onload = function()
 {
+	var canvas_elem = document.getElementById('game');
 	debug = document.getElementById("debug");
 	
-	canvas = new Canvas(document.getElementById('game'), screen_size);
+	canvas = new Canvas(canvas_elem, screen_size);
+	
+	mouse_pos = new Vector();
 	
 	// BOB
 	bob = new Sprite({
@@ -200,7 +207,6 @@ window.onload = function()
 			if (bob.collideSprite(birds.items[i]))
 			{
 				scene.stop();
-				debug.innerHTML = 'GAME OVER! score: '+ score +' wave: '+ nb_to_spawn;
 				break;
 			}
 		}
@@ -255,6 +261,45 @@ window.onload = function()
 	wave_t.text = '0';
 	wave_t.style = score_t.style;
 	
+	// Popup
+	var popup = new SpriteGroup();
+	var popup_back = new Sprite({
+		src:"image/popup.png",
+	});
+	popup_back.onload = function()
+	{
+		popup_back.rect.pos.x = (screen_size.x/2) - (popup_back.rect.size.x/2);
+		popup_back.rect.pos.y = (screen_size.y/2) - (popup_back.rect.size.y/2);
+	};
+	popup_btn = new Sprite({
+		src:"image/popup_btn.png",
+		size: new Vector(191, 44),
+		anim:[{fps:0}, {fps:0}]
+	});
+	popup_btn.onload = function()
+	{
+		popup_btn.rect.pos.x = (screen_size.x/2) - (popup_btn.rect.size.x/2);
+		popup_btn.rect.pos.y = (screen_size.y/2) - (popup_btn.rect.size.y/2) + 70;
+	};
+	popup_btn.update = function()
+	{
+		if (popup_btn.collidePoint(mouse_pos))
+		{
+			popup_btn.anim_column = 1;
+			if (mouse_pressed)
+			{
+				check_bird(true);
+				scene.group.remove(popup);
+			}
+		}
+		else
+		{
+			popup_btn.anim_column = 0;
+		}
+	};
+	popup.items.push(popup_back);
+	popup.items.push(popup_btn);
+	
 	// Create a scene
 	var scene = new Scene(canvas);
 	//scene.background_color = '#333'
@@ -267,6 +312,7 @@ window.onload = function()
 	scene.group.items.push(hud);
 	scene.group.items.push(score_t);
 	scene.group.items.push(wave_t);
+	scene.group.items.push(popup);
 	
 	// Load the scene
 	var loader = new Loader([base_bullet, base_bird]);
@@ -274,11 +320,17 @@ window.onload = function()
 	{
 		window.onkeydown = _onkeydown;
 		window.onkeyup = _onkeyup;
+		window.onmousedown = _onmousedown;
+		window.onmouseup = _onmouseup;
+		canvas_elem.onmousemove = _onmousemove;
 		
-		scene.start = function()
+		console.log("loader.onload")
+		
+		/*scene.start = function()
 		{
+			console.log("scene.start")
 			check_bird(true);
-		}
+		}*/
 		scene.load();
 	}
 	loader.load();
@@ -340,6 +392,24 @@ function _onkeyup(e)
 	{
 		bob.set_anim(BOB_ANIM_IDLE);
 	}
+}
+
+function _onmousemove(e)
+{
+	//console.log(e);
+	
+	mouse_pos.x = e.clientX;
+	mouse_pos.y = e.clientY;
+}
+
+function _onmousedown(e)
+{
+	mouse_pressed = true;
+}
+
+function _onmouseup(e)
+{
+	mouse_pressed = false;
 }
 
 </script>

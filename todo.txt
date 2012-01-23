@@ -3,14 +3,14 @@
 Framework
 	Save
 	Sounds
-	progress loader: http://blogs.adobe.com/webplatform/2012/01/13/html5-image-progress-events/
+	progress? loader: http://blogs.adobe.com/webplatform/2012/01/13/html5-image-progress-events/
 
 Example:
 	Shooting bob
+		death anim for birds and hero
 		popup gameover
-		mainMenu scene
+		popup intro
 		sounds
 	
-	a more complexe loader example
-	
-	sound demo: jamendo player?
+	loader example
+	sound demo

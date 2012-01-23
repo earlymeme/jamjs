@@ -115,6 +115,7 @@ var Loader = Class.extend(
 			{
 				if (this.items[i] != this)
 				{
+					this.items[i]._post_onload = this.items[i].onload;
 					this.items[i].onload = function() {self._load_update.apply(self, arguments)};
 					this.items[i].load();
 				}
@@ -125,6 +126,7 @@ var Loader = Class.extend(
 	load_update: function () {},
 	_load_update: function ()
 	{
+		this.items[this.nb_loaded]._post_onload()
 		this.nb_loaded += 1;
 		
 		if (this.nb_loaded == this.items.length)
@@ -527,7 +529,7 @@ var SpriteGroup = Loader.extend(
 		{
 			this.items.splice(pos, 1);
 		}
-	},
+	}
 });
 var Text = Loadable.extend(
 {

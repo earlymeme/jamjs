@@ -38,5 +38,5 @@ var SpriteGroup = Loader.extend(
 		{
 			this.items.splice(pos, 1);
 		}
-	},
+	}
 });
