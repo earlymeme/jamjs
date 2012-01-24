@@ -83,7 +83,7 @@ var Sprite = Loadable.extend(
 		canvas.ctx.drawImage(
 			this.img, //image
 			this.rect.size.x*this.anim_column, //sx
-			this.rect.size.y*this.config['anim'][this.current_anim]['row'], //sy
+			this.rect.size.y*this.current_anim, //sy
 			this.rect.size.x, //sw
 			this.rect.size.y, //sh
 			this.rect.pos.x, //dx

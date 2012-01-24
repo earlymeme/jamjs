@@ -19,6 +19,8 @@ var BIRD_SPEED = 2;
 var canvas;
 var screen_size = new Vector(640, 480);
 
+var scene;
+
 var bob;
 var bob_move = new Vector();
 
@@ -38,7 +40,10 @@ var wave_t = null;
 var mouse_pos = null;
 var mouse_pressed = false;
 
+var popup;
+var popup_back;
 var popup_btn;
+var popup_desc;
 
 var debug;
 
@@ -177,6 +182,14 @@ function spawn(nb)
 	}
 }
 
+function show_death_popup()
+{
+	scene.group.items.push(popup);
+	scene.group.remove(bob);
+	
+	popup_btn.current_anim = 1; // Show retry btn
+}
+
 window.onload = function()
 {
 	var canvas_elem = document.getElementById('game');
@@ -206,7 +219,12 @@ window.onload = function()
 		{
 			if (bob.collideSprite(birds.items[i]))
 			{
-				scene.stop();
+				// Bob is dead
+				
+				birds.items = [];
+				show_death_popup();
+				
+				//scene.stop();
 				break;
 			}
 		}
@@ -262,14 +280,22 @@ window.onload = function()
 	wave_t.style = score_t.style;
 	
 	// Popup
-	var popup = new SpriteGroup();
-	var popup_back = new Sprite({
+	popup = new SpriteGroup();
+	popup_back = new Sprite({
 		src:"image/popup.png",
 	});
 	popup_back.onload = function()
 	{
 		popup_back.rect.pos.x = (screen_size.x/2) - (popup_back.rect.size.x/2);
 		popup_back.rect.pos.y = (screen_size.y/2) - (popup_back.rect.size.y/2);
+	};
+	popup_desc = new Sprite({
+		src:"image/description.png"
+	});
+	popup_desc.onload = function()
+	{
+		popup_desc.rect.pos.x = popup_back.rect.pos.x + 5;
+		popup_desc.rect.pos.y = popup_back.rect.pos.y + 15;
 	};
 	popup_btn = new Sprite({
 		src:"image/popup_btn.png",
@@ -288,6 +314,17 @@ window.onload = function()
 			popup_btn.anim_column = 1;
 			if (mouse_pressed)
 			{
+				// Launch the game
+				score = 0;
+				nb_to_spawn = 0;
+				
+				if (popup_btn.current_anim > 0)
+				{
+					bob.rect.pos.x = (screen_size.x/2);
+					bob.rect.pos.y = (screen_size.y/2);
+					scene.group.items.push(bob);
+				}
+				
 				check_bird(true);
 				scene.group.remove(popup);
 			}
@@ -298,10 +335,11 @@ window.onload = function()
 		}
 	};
 	popup.items.push(popup_back);
+	popup.items.push(popup_desc);
 	popup.items.push(popup_btn);
 	
 	// Create a scene
-	var scene = new Scene(canvas);
+	scene = new Scene(canvas);
 	//scene.background_color = '#333'
 	
 	// Adding elements to the scene
