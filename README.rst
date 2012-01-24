@@ -10,11 +10,11 @@ HTML5 javascript classic game framework for canvas element.
 	- No dependency
 
 * Example:
-	- todo
+	- See example/ folder
 
 * Documentation:
 	- Use:
 		- todo
 	
 	- Hack
-		- for "compiling" the jsCanvas (using closure js), you need to run the python script build/make.sh.
+		- for "compiling" the jsCanvas (using closure js), you need to run the script build/make.sh.
