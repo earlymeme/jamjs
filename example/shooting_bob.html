@@ -284,29 +284,14 @@ window.onload = function()
 	popup_back = new Sprite({
 		src:"image/popup.png",
 	});
-	popup_back.onload = function()
-	{
-		popup_back.rect.pos.x = (screen_size.x/2) - (popup_back.rect.size.x/2);
-		popup_back.rect.pos.y = (screen_size.y/2) - (popup_back.rect.size.y/2);
-	};
 	popup_desc = new Sprite({
 		src:"image/description.png"
-	});
-	popup_desc.onload = function()
-	{
-		popup_desc.rect.pos.x = popup_back.rect.pos.x + 5;
-		popup_desc.rect.pos.y = popup_back.rect.pos.y + 15;
-	};
+	});;
 	popup_btn = new Sprite({
 		src:"image/popup_btn.png",
 		size: new Vector(191, 44),
 		anim:[{fps:0}, {fps:0}]
 	});
-	popup_btn.onload = function()
-	{
-		popup_btn.rect.pos.x = (screen_size.x/2) - (popup_btn.rect.size.x/2);
-		popup_btn.rect.pos.y = (screen_size.y/2) - (popup_btn.rect.size.y/2) + 70;
-	};
 	popup_btn.update = function()
 	{
 		if (popup_btn.collidePoint(mouse_pos))
@@ -334,6 +319,22 @@ window.onload = function()
 			popup_btn.anim_column = 0;
 		}
 	};
+	
+	popup.onload = function ()
+	{
+		//place back
+		popup_back.rect.pos.x = (screen_size.x/2) - (popup_back.rect.size.x/2);
+		popup_back.rect.pos.y = (screen_size.y/2) - (popup_back.rect.size.y/2);
+		
+		//place btn
+		popup_btn.rect.pos.x = (screen_size.x/2) - (popup_btn.rect.size.x/2);
+		popup_btn.rect.pos.y = (screen_size.y/2) - (popup_btn.rect.size.y/2) + 70;
+		
+		//place desc
+		popup_desc.rect.pos.x = popup_back.rect.pos.x + 5;
+		popup_desc.rect.pos.y = popup_back.rect.pos.y + 15;
+	};
+	
 	popup.items.push(popup_back);
 	popup.items.push(popup_desc);
 	popup.items.push(popup_btn);
@@ -460,5 +461,7 @@ function _onmouseup(e)
 	<p>Your browser does not support the canvas element.</p>
 	</canvas>
 	<div id="debug"></div>
+	<div><a href="../index.html">all examples</a>
+	<a href="https://github.com/yetanotherportfolio/jsGame">GitHub Repo</a></div>
 </body>
 </html>
