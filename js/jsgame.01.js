@@ -248,6 +248,19 @@ var Rect = Class.extend(
 	toString: function ()
 	{
 		return this.pos.toString() +' - '+ this.size.toString();
+	},
+	
+		/**
+	 * return true if the sprite collide the rect (use bounding box)
+	 */
+	collide: function (rect2)
+	{
+		var x1 = (this.pos.x <= rect2.pos.x && this.pos.x + this.size.x >= rect2.pos.x);
+		var y1 = (this.pos.y <= rect2.pos.y && this.pos.y + this.size.y >= rect2.pos.y);
+		var x2 = (rect2.pos.x <= this.pos.x && rect2.pos.x + rect2.size.x >= this.pos.x);
+		var y2 = (rect2.pos.y <= this.pos.y && rect2.pos.y + rect2.size.y >= this.pos.y);
+		
+		return (x1 || x2) && (y1 || y2);
 	}
 });
 
@@ -389,13 +402,23 @@ var Sprite = Loadable.extend(
 	_update: function (delay)
 	{
 		this.update_anim(delay);
-		this.update();
+		this.update(delay);
 	},
 	
-	move: function (vect)
+	move: function (vect, delta, speed)
 	{
-		this.rect.pos.x += vect.x;
-		this.rect.pos.y += vect.y;
+		if (!speed) speed = 1;
+		if (!delta)
+		{
+			delta = 1;
+		}
+		else
+		{
+			delta = delta/1000.0;
+		}
+		
+		this.rect.pos.x += vect.x * delta * speed;
+		this.rect.pos.y += vect.y * delta * speed;
 	},
 	
 	clone: function ()
@@ -405,12 +428,13 @@ var Sprite = Loadable.extend(
 		var x = rect.size.x;
 		var y = rect.size.y;
 		
-		//swap size because _onload wil swap it
+		//swap size because _onload will swap it
 		//TODO: find better
 		rect.size.x = config['size'].x;
 		rect.size.y = config['size'].y;
 		config['size'].x = x;
 		config['size'].y = y;
+		
 		
 		var newone = new Sprite(this.config);
 		newone.img = this.img;
@@ -468,24 +492,10 @@ var Sprite = Loadable.extend(
 	/**
 	 * return true if the sprite collide the rect (use bounding box)
 	 */
-	collideRect: function (pos, size)
-	{
-		var x1 = (this.rect.pos.x < pos.x && this.rect.pos.x + this.rect.size.x >= pos.x);
-		var y1 = (this.rect.pos.y < pos.y && this.rect.pos.y + this.rect.size.y >= pos.y);
-		var x2 = (pos.x < this.rect.pos.x && pos.x + size.x >= this.rect.pos.x);
-		var y2 = (pos.y < this.rect.pos.y && pos.y + size.y >= this.rect.pos.y);
-		
-		return (x1 || x2) && (y1 || y2);
-	},
-	
-	/**
-	 * return true if the sprite collide the rect (use bounding box)
-	 */
 	collideSprite: function (sprite)
 	{
-		return this.collideRect(
-			sprite.rect.pos,
-			sprite.rect.size
+		return this.rect.collide(
+			sprite.rect
 		);
 	}
 });
@@ -652,7 +662,7 @@ var Scene = Class.extend(
 		this.group.update(delay);
 		this.group.draw(this.canvas);
 		
-		this.update();
+		this.update(delay);
 		
 		var now2 = new Date().getTime();
 		this.interval_id = this.set_time_out(now2 - now);
@@ -665,10 +675,230 @@ var Scene = Class.extend(
 		{
 			var self = this;
 			var millisec = this.REFRESH_RATE - frame_time;
-			return setTimeout(
-				function() {self._update.apply(self, arguments);},
-				millisec
+			return this._requestAnimFrame(
+				function() {self._update.apply(self, arguments);}
 			)
+		}
+	},
+	
+	_requestAnimFrame : function (callback, time)
+	{
+		var rAF = window.requestAnimationFrame       || 
+				window.webkitRequestAnimationFrame || 
+				window.mozRequestAnimationFrame    || 
+				window.oRequestAnimationFrame      || 
+				window.msRequestAnimationFrame     || 
+				function( callback ){
+					window.setTimeout(callback, time);
+				};
+		return rAF(callback);
+	}
+});
+
+//TODO use:
+//https://github.com/jeremyckahn/shifty/blob/master/src/shifty.formulas.js
+var Easing = Class.extend({
+	
+	target: null,
+	time: 0,
+	properties: {},
+	endCallback: null,
+	
+	base_properties: {},
+	current_time: 0,
+	
+	init: function (target, time, properties, endCallback)
+	{
+		this.target = target;
+		this.time = time;
+		this.properties = properties;
+		this.endCallback = endCallback;
+		
+		this._init_base_properties();
+	},
+	
+	_init_base_properties: function ()
+	{
+		this.base_properties = {};
+		for (var k in this.properties)
+		{
+			this.base_properties[k] = this.target[k];
+		}
+	},
+	
+	update: function (delta)
+	{
+		this.current_time += delta;
+		
+		if (this.current_time < this.time)
+		{
+			var new_val;
+			for (var k in this.properties)
+			{
+				new_val = this.compute_val((this.properties[k] - this.base_properties[k]), (this.current_time / this.time))
+				this.target[k] = this.base_properties[k] + new_val;
+			}
+		}
+		else
+		{
+			for (var k in this.properties)
+			{
+				this.target[k] = this.properties[k];
+			}
+			
+			if (this.endCallback)
+			{
+				this.endCallback();
+			}
+		}
+	},
+	
+	compute_val: function (val, percent)
+	{
+		return val * this.linear(percent);
+	},
+	
+	linear: function (x)
+	{
+		return x;
+	}
+});
+
+var Particle = Class.extend({
+	
+	emitter: null,
+	sprite: null,
+	life_time: 0,
+	speed: 0,
+	angle: 0,
+	age: 0,
+	
+	init: function(emitter, sprite, life_time, speed, angle)
+	{
+		this.emitter = emitter;
+		this.sprite = sprite;
+		this.life_time = life_time;
+		this.speed = speed;
+		this.angle = angle;
+		
+		this.age = 0;
+	},
+	
+	update: function (delta)
+	{
+		this.age += 1;
+		
+		if (this.age >= this.life_time)
+		{
+			this.emitter.remove(this);
+		}
+		else
+		{
+			this.sprite.move(
+				getVectFromSpeedAndAngle(
+					this.angle,
+					this.speed
+				),
+				delta
+			)
+		}
+	}
+	
+});
+var ParticleEmitter = Class.extend({
+	
+	sprite: null,
+	group: null,
+	particles: [],
+	
+	start: null, //start position
+	nb_spread: 0, //number of particle create per cycle
+	life_time: 0, //life of particules
+	angle: 0,
+	speed: 0,
+	angle_rand: 0,
+	speed_rand: 0,
+	life_time_rand: 0,
+	
+	init: function(sprite, start, nb_spread, life_time, speed, angle, speed_rand, angle_rand, life_time_rand)
+	{
+		var self = this;
+		
+		this.sprite = sprite;
+		this.group = new SpriteGroup();
+		this.group.update = function() {self.update.apply(self, arguments);};
+		
+		this.start = start || new Vector(0,0);
+		this.nb_spread = nb_spread || 1;
+		this.life_time = life_time || 60;
+		this.angle = angle || 0;
+		this.speed = speed || 1;
+		this.speed_rand = speed_rand || 0;
+		this.angle_rand = angle_rand || 0;
+		this.angle_rand = angle_rand || 0;
+		this.life_time_rand = life_time_rand || 0;
+	},
+	
+	update: function (delta)
+	{
+		var i=0;
+		
+		for (i=0; i < this.particles.length; i++)
+		{
+			this.particles[i].update(delta);
+		}
+		
+		for (i=0; i < this.nb_spread; i++)
+		{
+			this.add();
+		}
+	},
+	
+	add: function ()
+	{
+		var new_sprite = this.sprite.clone();
+		new_sprite.rect.pos.x = this.start.x;
+		new_sprite.rect.pos.y = this.start.y;
+		
+		var angle = this.angle;
+		var speed = this.speed;
+		var life_time = this.life_time;
+		
+		if (this.angle_rand != 0)
+		{
+			angle = rand_int(angle - (this.angle_rand/2), angle + (this.angle_rand/2));
+		}
+		
+		if (this.speed_rand != 0)
+		{
+			speed = rand_int(speed - (this.speed_rand/2), speed + (this.speed_rand/2));
+		}
+		
+		if (this.life_time_rand != 0)
+		{
+			life_time = rand_int(life_time - (this.life_time_rand/2), life_time + (this.life_time_rand/2));
+		}
+		
+		var new_particle = new Particle(
+			this,
+			new_sprite,
+			life_time,
+			speed,
+			angle,
+			new Vector(0,0)
+		);
+		
+		this.group.items.push(new_particle.sprite);
+		this.particles.push(new_particle);
+	},
+	
+	remove: function (_particle)
+	{
+		var pos = this.particles.indexOf(_particle)
+		if (pos >= 0)
+		{
+			this.group.remove(_particle.sprite);
+			this.particles.splice(pos, 1);
 		}
 	}
 });
@@ -678,7 +908,8 @@ var Scene = Class.extend(
  */
 function rand_int(min, max)
 {
-	return min + Math.floor(Math.random()*(Math.abs(min)+max+1));
+//	return min + Math.floor(Math.random()*(Math.abs(min)+max+1));
+	return Math.floor(min + (Math.random()*(max-min+1)))
 }
 
 function getVectFromSpeedAndAngle(angle, speed)
@@ -718,6 +949,7 @@ function getKeyNum(e)
 	
 	return keynum;
 }
+
 var jsgame = {
 };
 

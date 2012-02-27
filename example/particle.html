@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>untitled</title>
+	<meta http-equiv="content-type" content="text/html;charset=utf-8" />
+	
+<script src="../js/jsgame.01.js"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+<script src="../js/stats.js"></script>
+<script>
+
+var stats;
+var canvas;
+var screen_size = new Vector(640, 480);
+
+var emitter = null;
+var scene;
+var sprite_base
+
+$(document).ready(function()
+{
+	canvas = new Canvas(document.getElementById('game'), screen_size);
+	
+	stats = new Stats();
+	stats.getDomElement().style.position = 'absolute';
+	stats.getDomElement().style.right = '0px';
+	stats.getDomElement().style.top = '0px';
+	document.body.appendChild( stats.getDomElement() );
+	
+	sprite_base = new Sprite({src: 'image/particle.png'});
+	sprite_base.rect.pos.x = -100;
+	
+	emitter = new ParticleEmitter(
+		sprite_base,
+		new Vector(320, 420),
+		1,
+		120,
+		40,
+		90,
+		10,
+		45,
+		20
+	);
+	
+	scene = new Scene(canvas);
+	
+	scene.group.items.push(sprite_base);
+	scene.group.items.push(emitter.group);
+	
+	scene.load();
+	scene.update = function(){
+		stats.update();
+	};
+	
+	$("#nb_spread").change(function() {
+		emitter.nb_spread = parseFloat($("#nb_spread").val());
+	});
+	$("#life_time").change(function() {
+		emitter.life_time = parseFloat($("#life_time").val());
+	});
+	$("#speed").change(function() {
+		emitter.speed = parseFloat($("#speed").val());
+	});
+	$("#angle").change(function() {
+		emitter.angle = parseFloat($("#angle").val());
+	});
+	$("#speed_rand").change(function() {
+		emitter.speed_rand = parseFloat($("#speed_rand").val());
+	});
+	$("#angle_rand").change(function() {
+		emitter.angle_rand = parseFloat($("#angle_rand").val());
+	});
+	$("#life_time_rand").change(function() {
+		emitter.life_time_rand = parseFloat($("#life_time_rand").val());
+	});
+});
+</script>
+<style>
+
+body {
+}
+
+canvas {
+	border: 1px solid #ccc;
+	float: left;
+}
+
+#config {
+	margin-left: 20px;
+	padding: 5px;
+	float: left;
+	border: 1px solid #ccc;
+}
+
+</style>
+</head>
+
+<body>
+	<div id="container">
+		<canvas id="game" width="640" height="480">
+		<p>Your browser does not support the canvas element.</p>
+		</canvas>
+		<div id="config">
+		<p><label for="nb_spread">nb_spread</label><input type="text" value="1" id="nb_spread"></p>
+		<p><label for="life_time">life_time</label><input type="text" value="120" id="life_time"></p>
+		<p><label for="speed">speed</label><input type="text" value="40" id="speed"></p>
+		<p><label for="angle">angle</label><input type="text" value="90" id="angle"></p>
+		<p><label for="speed_rand">speed_rand</label><input type="text" value="10" id="speed_rand"></p>
+		<p><label for="angle_rand">angle_rand</label><input type="text" value="45" id="angle_rand"></p>
+		<p><label for="life_time_rand">life_time_rand</label><input type="text" value="20" id="life_time_rand"></p>
+		</div>
+	</div>
+</body>
+</html>

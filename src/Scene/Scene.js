@@ -54,7 +54,7 @@ var Scene = Class.extend(
 		this.group.update(delay);
 		this.group.draw(this.canvas);
 		
-		this.update();
+		this.update(delay);
 		
 		var now2 = new Date().getTime();
 		this.interval_id = this.set_time_out(now2 - now);
@@ -67,10 +67,22 @@ var Scene = Class.extend(
 		{
 			var self = this;
 			var millisec = this.REFRESH_RATE - frame_time;
-			return setTimeout(
-				function() {self._update.apply(self, arguments);},
-				millisec
+			return this._requestAnimFrame(
+				function() {self._update.apply(self, arguments);}
 			)
 		}
+	},
+	
+	_requestAnimFrame : function (callback, time)
+	{
+		var rAF = window.requestAnimationFrame       || 
+				window.webkitRequestAnimationFrame || 
+				window.mozRequestAnimationFrame    || 
+				window.oRequestAnimationFrame      || 
+				window.msRequestAnimationFrame     || 
+				function( callback ){
+					window.setTimeout(callback, time);
+				};
+		return rAF(callback);
 	}
 });

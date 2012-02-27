@@ -136,13 +136,23 @@ var Sprite = Loadable.extend(
 	_update: function (delay)
 	{
 		this.update_anim(delay);
-		this.update();
+		this.update(delay);
 	},
 	
-	move: function (vect)
+	move: function (vect, delta, speed)
 	{
-		this.rect.pos.x += vect.x;
-		this.rect.pos.y += vect.y;
+		if (!speed) speed = 1;
+		if (!delta)
+		{
+			delta = 1;
+		}
+		else
+		{
+			delta = delta/1000.0;
+		}
+		
+		this.rect.pos.x += vect.x * delta * speed;
+		this.rect.pos.y += vect.y * delta * speed;
 	},
 	
 	clone: function ()
@@ -152,12 +162,13 @@ var Sprite = Loadable.extend(
 		var x = rect.size.x;
 		var y = rect.size.y;
 		
-		//swap size because _onload wil swap it
+		//swap size because _onload will swap it
 		//TODO: find better
 		rect.size.x = config['size'].x;
 		rect.size.y = config['size'].y;
 		config['size'].x = x;
 		config['size'].y = y;
+		
 		
 		var newone = new Sprite(this.config);
 		newone.img = this.img;
@@ -215,24 +226,10 @@ var Sprite = Loadable.extend(
 	/**
 	 * return true if the sprite collide the rect (use bounding box)
 	 */
-	collideRect: function (pos, size)
-	{
-		var x1 = (this.rect.pos.x < pos.x && this.rect.pos.x + this.rect.size.x >= pos.x);
-		var y1 = (this.rect.pos.y < pos.y && this.rect.pos.y + this.rect.size.y >= pos.y);
-		var x2 = (pos.x < this.rect.pos.x && pos.x + size.x >= this.rect.pos.x);
-		var y2 = (pos.y < this.rect.pos.y && pos.y + size.y >= this.rect.pos.y);
-		
-		return (x1 || x2) && (y1 || y2);
-	},
-	
-	/**
-	 * return true if the sprite collide the rect (use bounding box)
-	 */
 	collideSprite: function (sprite)
 	{
-		return this.collideRect(
-			sprite.rect.pos,
-			sprite.rect.size
+		return this.rect.collide(
+			sprite.rect
 		);
 	}
 });

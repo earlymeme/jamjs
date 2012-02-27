@@ -3,7 +3,8 @@
  */
 function rand_int(min, max)
 {
-	return min + Math.floor(Math.random()*(Math.abs(min)+max+1));
+//	return min + Math.floor(Math.random()*(Math.abs(min)+max+1));
+	return Math.floor(min + (Math.random()*(max-min+1)))
 }
 
 function getVectFromSpeedAndAngle(angle, speed)

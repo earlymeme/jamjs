@@ -12,6 +12,11 @@
 
 #include 'Scene/Scene.js';
 
+#include 'Easing/Easing.js';
+
+#include 'Particle/Particle.js';
+#include 'Particle/ParticleEmitter.js';
+
 #include 'utils.js';
 
 var jsgame = {

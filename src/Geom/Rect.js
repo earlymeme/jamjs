@@ -59,5 +59,18 @@ var Rect = Class.extend(
 	toString: function ()
 	{
 		return this.pos.toString() +' - '+ this.size.toString();
+	},
+	
+		/**
+	 * return true if the sprite collide the rect (use bounding box)
+	 */
+	collide: function (rect2)
+	{
+		var x1 = (this.pos.x <= rect2.pos.x && this.pos.x + this.size.x >= rect2.pos.x);
+		var y1 = (this.pos.y <= rect2.pos.y && this.pos.y + this.size.y >= rect2.pos.y);
+		var x2 = (rect2.pos.x <= this.pos.x && rect2.pos.x + rect2.size.x >= this.pos.x);
+		var y2 = (rect2.pos.y <= this.pos.y && rect2.pos.y + rect2.size.y >= this.pos.y);
+		
+		return (x1 || x2) && (y1 || y2);
 	}
 });
