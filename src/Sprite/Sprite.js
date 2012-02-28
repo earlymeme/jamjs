@@ -4,6 +4,7 @@ var Sprite = Loadable.extend(
 	img: null,
 	rect: null,
 	angle: 0,
+	alpha: 1.0,
 	
 	// animation
 	anim_column: 0,
@@ -95,10 +96,15 @@ var Sprite = Loadable.extend(
 	
 	draw: function (canvas)
 	{
-		if (this.angle != 0)
+		var need_save = this.angle != 0 || this.alpha != 1;
+		
+		if (need_save)
 		{
 			canvas.ctx.save();
-			
+		}
+		
+		if (this.angle != 0)
+		{
 			var tr = new Vector(
 				this.rect.pos.x + (this.rect.size.x/2),
 				this.rect.pos.y + (this.rect.size.y/2)
@@ -120,9 +126,14 @@ var Sprite = Loadable.extend(
 			);
 		}
 		
+		if (this.alpha != 1)
+		{
+			canvas.ctx.globalAlpha = this.alpha;
+		}
+		
 		this._blit(canvas);
 		
-		if (this.angle != 0)
+		if (need_save)
 		{
 			canvas.ctx.restore();
 		}

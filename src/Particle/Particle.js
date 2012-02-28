@@ -28,6 +28,9 @@ var Particle = Class.extend({
 		}
 		else
 		{
+			this.sprite.alpha = 1- (this.age / this.life_time);
+			if (new Date().getMilliseconds() > 900) console.log(this.sprite.alpha)
+			
 			this.sprite.move(
 				getVectFromSpeedAndAngle(
 					this.angle,
