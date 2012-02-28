@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>untitled</title>
+	<meta http-equiv="content-type" content="text/html;charset=utf-8" />
+	
+<script src="../js/jsgame.01.js"></script>
+<script>
+
+var canvas;
+var screen_size = new Vector(640, 480);
+
+var icon;
+
+window.onload = function()
+{
+	var icon_speed = new Vector(2, 2);
+	var scene;
+	
+	// Init the canvas
+	canvas = new Canvas(document.getElementById('game'), screen_size);
+	
+	// Create a icon sprite
+	icon = new Sprite({src:"image/icon.svg"});
+	icon.rect.pos = new Vector(screen_size.x/2, screen_size.y/2);
+	
+	// The update loop of the icon
+	icon.update = function()
+	{
+		// Move the icon with the speed
+		icon.move(icon_speed);
+		
+		// Bounce against the screen
+		if (icon.rect.left() < 0 || icon.rect.right() > screen_size.x)
+		{
+			icon_speed.x = -icon_speed.x;
+		}
+		if (icon.rect.top() < 0 || icon.rect.bottom() > screen_size.y)
+		{
+			icon_speed.y = -icon_speed.y;
+		}
+	}
+	
+	// Create a scene
+	scene = new Scene(canvas);
+	scene.background_color = '#333';
+	
+	// Add the icon to the scene
+	scene.group.items.push(icon);
+	
+	// Load and start the scene
+	scene.load();
+}
+</script>
+<style>
+</style>
+</head>
+
+<body>
+	<canvas id="game" width="640" height="480">
+	<p>Your browser does not support the canvas element.</p>
+	</canvas>
+	<div id="debug"></div>
+</body>
+</html>
