@@ -78,9 +78,11 @@ var Sprite = Loadable.extend(
 		this.img.src = this.config['src'];
 	},
 	
+	/**
+	 * @see http://www.whatwg.org/specs/web-apps/current-work/multipage/the-canvas-element.html#dom-context-2d-drawimage
+	 */
 	_blit: function (canvas) 
 	{
-		//see http://www.whatwg.org/specs/web-apps/current-work/multipage/the-canvas-element.html#dom-context-2d-drawimage
 		canvas.ctx.drawImage(
 			this.img, //image
 			this.rect.size.x*this.anim_column, //sx

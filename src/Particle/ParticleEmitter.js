@@ -13,7 +13,10 @@ var ParticleEmitter = Class.extend({
 	speed_rand: 0,
 	life_time_rand: 0,
 	
-	init: function(sprite, start, nb_spread, life_time, speed, angle, speed_rand, angle_rand, life_time_rand)
+	init: function(
+		sprite, start, nb_spread,
+		life_time, speed, angle, speed_rand, angle_rand, life_time_rand
+	)
 	{
 		var self = this;
 		
@@ -59,17 +62,26 @@ var ParticleEmitter = Class.extend({
 		
 		if (this.angle_rand != 0)
 		{
-			angle = rand_int(angle - (this.angle_rand/2), angle + (this.angle_rand/2));
+			angle = rand_int(
+				angle - (this.angle_rand/2),
+				angle + (this.angle_rand/2)
+			);
 		}
 		
 		if (this.speed_rand != 0)
 		{
-			speed = rand_int(speed - (this.speed_rand/2), speed + (this.speed_rand/2));
+			speed = rand_int(
+				speed - (this.speed_rand/2),
+				speed + (this.speed_rand/2)
+			);
 		}
 		
 		if (this.life_time_rand != 0)
 		{
-			life_time = rand_int(life_time - (this.life_time_rand/2), life_time + (this.life_time_rand/2));
+			life_time = rand_int(
+				life_time - (this.life_time_rand/2),
+				life_time + (this.life_time_rand/2)
+			);
 		}
 		
 		var new_particle = new Particle(
@@ -87,7 +99,7 @@ var ParticleEmitter = Class.extend({
 	
 	remove: function (_particle)
 	{
-		var pos = this.particles.indexOf(_particle)
+		var pos = this.particles.indexOf(_particle);
 		if (pos >= 0)
 		{
 			this.group.remove(_particle.sprite);

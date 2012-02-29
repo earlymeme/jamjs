@@ -1,10 +1,13 @@
 /**
- * random number between min and max (both side inclusive)
+ * random number between min and max (both side inclusive).
+ * @param {Number} min the minimum value (include).
+ * @param {Number} max the maximum value (include).
+ * @return {Number} a number between min and max.
  */
 function rand_int(min, max)
 {
 //	return min + Math.floor(Math.random()*(Math.abs(min)+max+1));
-	return Math.floor(min + (Math.random()*(max-min+1)))
+	return Math.floor(min + (Math.random()*(max-min+1)));
 }
 
 function getVectFromSpeedAndAngle(angle, speed)

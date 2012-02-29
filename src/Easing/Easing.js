@@ -38,7 +38,10 @@ var Easing = Class.extend({
 			var new_val;
 			for (var k in this.properties)
 			{
-				new_val = this.compute_val((this.properties[k] - this.base_properties[k]), (this.current_time / this.time))
+				new_val = this.compute_val(
+					(this.properties[k] - this.base_properties[k]),
+					(this.current_time / this.time)
+				);
 				this.target[k] = this.base_properties[k] + new_val;
 			}
 		}

@@ -33,7 +33,7 @@ var SpriteGroup = Loader.extend(
 	
 	remove: function(item)
 	{
-		var pos = this.items.indexOf(item)
+		var pos = this.items.indexOf(item);
 		if (pos >= 0)
 		{
 			this.items.splice(pos, 1);

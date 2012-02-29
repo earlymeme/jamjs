@@ -68,8 +68,10 @@ var Scene = Class.extend(
 			var self = this;
 			var millisec = this.REFRESH_RATE - frame_time;
 			return this._requestAnimFrame(
-				function() {self._update.apply(self, arguments);}
-			)
+				function() {
+					self._update.apply(self, arguments);
+				}
+			);
 		}
 	},
 	

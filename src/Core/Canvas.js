@@ -5,7 +5,7 @@ var Canvas = Class.extend({
 	
 	init: function(canvas_elem, size)
 	{
-		this.ctx = canvas_elem.getContext("2d");
+		this.ctx = canvas_elem.getContext('2d');
 		this.size = size;
 	},
 	
