@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
-#  lilint_error_parser.py
+#  lint_error_parser.py
 #  
-#  Copyright 2012 fglesser <fglesser@ODD1-PC014>
+#  Copyright 2012 yetanotherportfolio.fr
 #  
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
