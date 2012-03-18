@@ -52,10 +52,10 @@ function _onload()
 	bird.angle = -45;
 	
 	var ease = new Easing(
-		bird.rect.pos,
-		5000.0,
-		{x: 640-32, y: 480-32},
-		function()
+		bird.rect.pos,			//target
+		5000.0,					//time
+		{x: 640-32, y: 480-32},	//param
+		function()				//end callback
 		{
 			this.properties.x = 0;
 			this.properties.y = 0;
